@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {createProduct,relatedProduct,showProduct,searchProduct,productById,remouveProduct,updateProduct,getOneProduct,allProduct} = require('../controllers/productController')
+const {createProduct,photoProduct,relatedProduct,showProduct,searchProduct,productById,remouveProduct,updateProduct,getOneProduct,allProduct} = require('../controllers/productController')
 const {requireSignIn, isAuth, isAdmin} = require('../middlewares/auth')
 const {userById} = require('../middlewares/user')
 
@@ -8,6 +8,7 @@ router.get('/', allProduct)
 router.get('/:productId', showProduct)
 router.get('/related/:productId', relatedProduct)
 router.post('/search', searchProduct)
+router.get('/photo/:productId', photoProduct)
 
 router.post('/create/:userId', [requireSignIn, isAuth, isAdmin], createProduct)
 router.delete('/:productId/:userId',[requireSignIn, isAuth, isAdmin], remouveProduct)

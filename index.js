@@ -1,5 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const cors = require('cors')
 
 const authRouters = require('./routes/auth')
 const userRouters = require('./routes/user')
@@ -23,11 +24,12 @@ mongoose.connect(process.env.DATABASE,{
 .catch(()=> console.log('not connect to db'))
 
 app.use(express.json())
+app.use(cors())
 app.use(expressValidator())
 app.use(cookieParser())
 
 app.use('/api',authRouters);
-app.use('/api',userRouters);
+app.use('/api/user',userRouters);
 app.use('/api/category',categoryRouters);
 app.use('/api/product',productRouters);
 const port = process.env.PORT || 3000;

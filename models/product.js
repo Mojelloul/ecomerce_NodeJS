@@ -29,10 +29,9 @@ const productSchema = new mongoose.Schema({
         ref: 'Category',
         require:true
     },
-    shipping:{
-        require:false,
-        type: Boolean,
-        default:false
+    sold:{
+        type: Number,
+        default:0
     }
 },{timestamps:true});
 

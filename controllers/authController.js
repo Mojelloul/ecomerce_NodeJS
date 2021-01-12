@@ -11,6 +11,8 @@ exports.signup=(req,res)=>{
         if(err){
             return res.status(400).send(err)
         }
+        user.hashed_password = undefined;
+        user.salt = undefined;
         res.send(user)
     })
 }
@@ -38,7 +40,7 @@ exports.signin = (req, res) => {
     })
 }
 exports.signout = (req,res)=>{
-    res.ctearCookie('token');
+    res.clearCookie('token');
     res.json({
         message:"User SignOut"
     })

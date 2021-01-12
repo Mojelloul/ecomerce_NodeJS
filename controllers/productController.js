@@ -32,7 +32,8 @@ exports.createProduct = (req, res) => {
             description: Joi.string().required(),
             price: Joi.required(),
             quantity: Joi.required(),
-            category: Joi.required()
+            category: Joi.required(),
+            shipping: Joi.string().required(),
         })
         const {error} = schema.validate(fields);
         if(error){
@@ -55,7 +56,9 @@ exports.createProduct = (req, res) => {
 }
 
 exports.productById = (req, res, next, id) => {
-    product.findById(id).exec((err,product)=>{
+    product.findById(id)
+    .populate('category')
+    .exec((err,product)=>{
         if(err || !product){
             return res.status(404).json({
                 error: 'Product Not Found !'
@@ -146,8 +149,15 @@ exports.allProduct = (req, res) => {
     let sortBy = req.query.sortBy ? req.query.sortBy : '_id';
     let order = req.query.order ? req.query.order : 'asc';
     let limit = req.query.limit ? parseInt(req.query.limit) : 6;
-
-    Product.find()
+    let query = {}
+    let {search,category} = req.query;
+    if(search){
+        query.name={$regex: search, $options: 'i'}
+    }
+    if(category){
+        query.category= category
+    }
+    Product.find(query)
            .select("-photo")
            .populate('category')
            .sort([[sortBy, order]])
@@ -166,7 +176,8 @@ exports.allProduct = (req, res) => {
 
 exports.relatedProduct = (req,res)=>{
     let limit = req.query.limit ? parseInt(req.query.limit) : 6;
-    Product.find({category: req.product.category, _id:{$ne: req.product._id}})
+    console.log(req.product.category)
+    Product.find({category: req.product.category, _id:{ $ne: req.product._id}})
             .limit(limit)
             .select('-photo')
             .populate('category','_id name')
@@ -185,11 +196,11 @@ exports.relatedProduct = (req,res)=>{
 exports.searchProduct = (req,res) =>{
     let sortBy = req.query.sortBy ? req.query.sortBy : '_id';
     let order = req.query.order ? req.query.order : 'asc';
-    let limit = req.query.limit ? parseInt(req.query.limit) : 6;
+    let limit = req.body.limit ? parseInt(req.body.limit) : 6;
     let skip = parseInt(req.body.skip);
     let findArgs = {};
-
            for(let key in req.body.filters){
+            console.log('1')
             if(req.body.filters[key].length> 0){
                 if(key === "price"){
                     findArgs[key]={
